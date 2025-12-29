@@ -1,3 +1,12 @@
 spring:
   application:
     name: car-service-booking
+  datasource:
+    url: jdbc:postgresql://localhost:5432/car_service_booking
+    username: postgres
+    password: 171104
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
