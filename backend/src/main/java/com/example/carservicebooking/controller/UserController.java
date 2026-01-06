@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.carservicebooking.service.UserService;
+
+import jakarta.validation.Valid;
+
+import com.example.carservicebooking.dto.request.ApiResponse;
 //dto imports
 import com.example.carservicebooking.dto.request.UserCreatetionRequest;
 import com.example.carservicebooking.dto.request.UserUpdateRequest;
@@ -28,8 +32,11 @@ public class UserController {
     private UserService userService; 
 
     @PostMapping
-    User createUser(@RequestBody UserCreatetionRequest request) {
-        return userService._createUser(request);
+    ApiResponse<User> createUser(@RequestBody @Valid UserCreatetionRequest request) {
+
+        ApiResponse<User> response = new ApiResponse<>();
+        response.setResult(userService._createUser(request));
+        return response;
     }
 
     @GetMapping("/getAllUsers")

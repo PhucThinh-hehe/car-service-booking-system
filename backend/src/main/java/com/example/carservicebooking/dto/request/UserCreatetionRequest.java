@@ -2,19 +2,31 @@ package com.example.carservicebooking.dto.request;
 
 import java.time.LocalDate;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 public class UserCreatetionRequest {
+    @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
+    @NotEmpty(message = "Username cannot be null")
     private String username;
+
     private String password;
     private String firstName;
     private String lastName; 
     private String address;
+
     private LocalDate dateOfBirth;
     private String phoneNumber;
+    @Email(message = "Email should be valid")
     private String email;
     private String role;
     private boolean isActive;
     private LocalDate createdAt;
     // Getters and Setters
+
+
     public String getUsername() {
         return username;
     }

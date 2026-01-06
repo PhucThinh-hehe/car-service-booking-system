@@ -14,6 +14,11 @@ public class UserService {
 
     public User _createUser( UserCreatetionRequest request) {
         User user = new User();
+
+        if(userRepository.existsByUsername(request.getUsername())) {
+            throw new RuntimeException("Username already exists");
+        }
+        
         user.setUsername(request.getUsername());
         user.setPassword(request.getPassword());
         user.setFirstName(request.getFirstName());
@@ -35,8 +40,10 @@ public class UserService {
     }
     public User _updateUser(String id, UserUpdateRequest request) {
         User user = _getUserById(id);
-        if (user != null) {
-            user.setPassword(request.getPassword());
+        if (user == null) {
+           throw new RuntimeException("User not found");
+        }
+         user.setPassword(request.getPassword());
             user.setFirstName(request.getFirstName());
             user.setLastName(request.getLastName());
             user.setAddress(request.getAddress());
@@ -47,8 +54,6 @@ public class UserService {
             user.setActive(request.isActive());
             user.setCreatedAt(request.getCreatedAt());
             return userRepository.save(user);
-        }
-        return null;
     }
     public String _deleteUser(String id){
         User user = _getUserById(id);
