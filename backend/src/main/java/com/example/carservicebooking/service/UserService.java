@@ -3,8 +3,10 @@ import com.example.carservicebooking.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.carservicebooking.entity.User;
+import com.example.carservicebooking.exception.CustomException;
 import com.example.carservicebooking.dto.request.UserCreatetionRequest;
 import com.example.carservicebooking.dto.request.UserUpdateRequest;
+import com.example.carservicebooking.exception.ErrorCode;
 import java.util.List;
 
 @Service
@@ -16,7 +18,7 @@ public class UserService {
         User user = new User();
 
         if(userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username already exists");
+            throw new CustomException(ErrorCode.USER_EXISTED);
         }
         
         user.setUsername(request.getUsername());
@@ -36,12 +38,12 @@ public class UserService {
         return userRepository.findAll();
     }
     public User _getUserById(String id) {
-        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        return userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
     public User _updateUser(String id, UserUpdateRequest request) {
         User user = _getUserById(id);
         if (user == null) {
-           throw new RuntimeException("User not found");
+           throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
          user.setPassword(request.getPassword());
             user.setFirstName(request.getFirstName());

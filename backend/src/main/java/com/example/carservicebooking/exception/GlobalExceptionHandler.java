@@ -2,18 +2,37 @@ package com.example.carservicebooking.exception;
 
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import com.example.carservicebooking.dto.request.ApiResponse;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
     
-    @ExceptionHandler(value = RuntimeException.class)
-    ResponseEntity<String> handlingRuntimeException(RuntimeException ex) {
-        return  ResponseEntity.badRequest().body(ex.getMessage());
+    @ExceptionHandler(value = Exception.class)
+    ResponseEntity<ApiResponse> handlingRuntimeException(Exception ex) {
+        ApiResponse response = new ApiResponse<>();
+        response.setCode(ErrorCode.UNCATEGORIZED_ERROR.getCode());
+        response.setMessage(ErrorCode.UNCATEGORIZED_ERROR.getMessage());
+        return  ResponseEntity.badRequest().body(response);
     }
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    ResponseEntity<String> handlingValidationException(MethodArgumentNotValidException ex) {
-        String errorMessage = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
-        return  ResponseEntity.badRequest().body(errorMessage);
+    ResponseEntity<ApiResponse> handlingValidationException(MethodArgumentNotValidException ex) {
+        String enumKey = ex.getFieldError().getDefaultMessage();
+        ErrorCode errorCode = ErrorCode.valueOf(enumKey);
+         ApiResponse response = new ApiResponse<>();
+        response.setCode(errorCode.getCode());
+        response.setMessage(errorCode.getMessage());
+        return  ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(value = CustomException.class)
+    ResponseEntity<ApiResponse> handlingCustomException(CustomException ex) {
+        ErrorCode errorCode = ex.getErrorCode();
+        ApiResponse response = new ApiResponse<>();
+        response.setCode(ex.getErrorCode().getCode());
+        response.setMessage(ex.getErrorCode().getMessage());
+        return  ResponseEntity.badRequest().body(response);
     }
 }

@@ -4,16 +4,18 @@ import java.time.LocalDate;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class UserCreatetionRequest {
-    @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
-    @NotEmpty(message = "Username cannot be null")
+    @Size(min = 3, max = 20, message = "USERNAME_INVALID")
+    @NotEmpty(message = "USERNAME_EMPTY")
     private String username;
-
+    @Size(min = 6, message = "PASSWORD_INVALID")
+    @NotEmpty(message = "PASSWORD_EMPTY")
     private String password;
+    @NotEmpty(message = "FIRST_NAME_EMPTY")
     private String firstName;
+    @NotEmpty(message = "LAST_NAME_EMPTY")
     private String lastName; 
     private String address;
 
