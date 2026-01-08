@@ -1,6 +1,7 @@
 package com.example.carservicebooking.service;
 import com.example.carservicebooking.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import com.example.carservicebooking.entity.User;
 import com.example.carservicebooking.exception.CustomException;
@@ -8,60 +9,61 @@ import com.example.carservicebooking.dto.request.UserCreatetionRequest;
 import com.example.carservicebooking.dto.request.UserUpdateRequest;
 import com.example.carservicebooking.exception.ErrorCode;
 import java.util.List;
+import com.example.carservicebooking.dto.response.UserResponse;
+import com.example.carservicebooking.mapper.UserMapper;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
-    @Autowired
-    private  UserRepository userRepository;
+    UserRepository userRepository;
+     UserMapper userMapper;
 
-    public User _createUser( UserCreatetionRequest request) {
+     ///create user
+    public UserResponse _createUser( UserCreatetionRequest request) {
         User user = new User();
 
         if(userRepository.existsByUsername(request.getUsername())) {
             throw new CustomException(ErrorCode.USER_EXISTED);
         }
         
-        user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setAddress(request.getAddress());
-        user.setDateOfBirth(request.getDateOfBirth());
-        user.setPhoneNumber(request.getPhoneNumber());
-        user.setEmail(request.getEmail());
-        user.setRole(request.getRole());
-        user.setActive(request.isActive());
-        user.setCreatedAt(request.getCreatedAt());
-        return userRepository.save(user);
+        user = userMapper.creatUser(request);
+        return userMapper.toUserResponse(userRepository.save(user));
     }
-    public List<User> _getAllUsers() {
-        return userRepository.findAll();
+
+    ///get all users
+    public List<UserResponse> _getAllUsers() {
+        return userMapper.toAllUserResponse(userRepository.findAll());
     }
-    public User _getUserById(String id) {
-        return userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+
+    ///get user by id
+    public UserResponse _getUserById(String id) {
+
+        return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND)));
     }
-    public User _updateUser(String id, UserUpdateRequest request) {
-        User user = _getUserById(id);
+
+    ///update user
+    public UserResponse _updateUser(String id, UserUpdateRequest request) {
+        User user = userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         if (user == null) {
            throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
-         user.setPassword(request.getPassword());
-            user.setFirstName(request.getFirstName());
-            user.setLastName(request.getLastName());
-            user.setAddress(request.getAddress());
-            user.setDateOfBirth(request.getDateOfBirth());
-            user.setPhoneNumber(request.getPhoneNumber());
-            user.setEmail(request.getEmail());
-            user.setRole(request.getRole());
-            user.setActive(request.isActive());
-            user.setCreatedAt(request.getCreatedAt());
-            return userRepository.save(user);
+         userMapper.updateUser(user, request);  
+        return userMapper.toUserResponse(userRepository.save(user));
     }
+
+
+    ///delete user
     public String _deleteUser(String id){
-        User user = _getUserById(id);
-        if (user !=null) {
-            userRepository.delete(user);
-        };
-        return "Exception: Have some issue in deleting user."; 
+        User user = userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        try{
+            if (user !=null) {
+                userRepository.delete(user);
+            }
+            return "User deleted successfully.";
+        } catch (CustomException cException) {
+            return "Error deleting user: " + cException.getMessage(); 
+        }
     }
 }

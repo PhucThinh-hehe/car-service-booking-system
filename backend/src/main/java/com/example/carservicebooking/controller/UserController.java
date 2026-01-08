@@ -18,8 +18,7 @@ import com.example.carservicebooking.dto.request.ApiResponse;
 //dto imports
 import com.example.carservicebooking.dto.request.UserCreatetionRequest;
 import com.example.carservicebooking.dto.request.UserUpdateRequest;
-//entity imports
-import com.example.carservicebooking.entity.User;
+import com.example.carservicebooking.dto.response.UserResponse;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
@@ -32,25 +31,25 @@ public class UserController {
     private UserService userService; 
 
     @PostMapping
-    ApiResponse<User> createUser(@RequestBody @Valid UserCreatetionRequest request) {
+    ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreatetionRequest request) {
 
-        ApiResponse<User> response = new ApiResponse<>();
+        ApiResponse<UserResponse> response = new ApiResponse<>();
         response.setResult(userService._createUser(request));
         return response;
     }
 
     @GetMapping("/getAllUsers")
-   List<User> getUsers() {
+   List<UserResponse> getUsers() {
        
         return userService._getAllUsers();
     }
     @GetMapping("/getById/{id}")
-    User getUserById(@PathVariable String id) {
+    UserResponse getUserById(@PathVariable String id) {
         return userService._getUserById(id);
     }
 
     @PutMapping("/updateById/{id}")
-    User updateUser(@PathVariable String id, @RequestBody UserUpdateRequest request) {
+    UserResponse updateUser(@PathVariable String id, @RequestBody UserUpdateRequest request) {
        return userService._updateUser(id, request); 
     }
 
